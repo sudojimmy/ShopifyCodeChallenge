@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Shopify-CodeChanllenge</string>
+    <string name="product_list">Product List</string>
+    <string name="tag_list">Tag List</string>
+</resources>
