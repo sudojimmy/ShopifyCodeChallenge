@@ -15,6 +15,7 @@ public class Product {
     String published_at;
     String published_scope;
     String tags;
+    List<String>tagList;
     String template_suffix;
     String title;
     String updated_at;

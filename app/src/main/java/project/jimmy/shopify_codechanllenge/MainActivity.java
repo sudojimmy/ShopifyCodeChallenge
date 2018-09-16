@@ -1,34 +1,24 @@
 package project.jimmy.shopify_codechanllenge;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
 public class MainActivity extends AppCompatActivity {
-
-    private TextView mTextMessage;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText(R.string.product_list);
-                    Log.d("tag", DataStore.dataStore.getTable().products.get(0).admin_graphql_api_id);
-                    return true;
-                case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.tag_list);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +26,53 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d("tag", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        ListView listView = findViewById(R.id.tag_list_view);
+
+        Context c = this;
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                TagListAdapter tagListAdapter = new TagListAdapter(c);
+                listView.setAdapter(tagListAdapter);
+            }
+        }, 2000);
+
+
+    }
+
+    private class TagListAdapter extends BaseAdapter {
+        private Context context;
+        private ListView listView;
+        private List<String> tags = DataStore.dataStore.getTags();
+
+        TagListAdapter(Context content) {
+            this.context = content;
+        }
+
+        @Override
+        public int getCount() {
+            return tags.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return tags.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView textView = new TextView(context);
+            System.out.println(tags.get(position));
+            textView.setText(tags.get(position));
+            textView.setBackgroundColor(position % 2 == 0 ? 0xffffffff : 0xbbbbbbbb);
+            textView.setTextSize(22);
+            return textView;
+        }
     }
 
 }
