@@ -1,22 +1,19 @@
 package project.jimmy.shopify_codechanllenge;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,19 +27,28 @@ public class MainActivity extends AppCompatActivity {
 
         Context c = this;
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                TagListAdapter tagListAdapter = new TagListAdapter(c);
-                listView.setAdapter(tagListAdapter);
-            }
-        }, 2000);
+        handler.postDelayed(() -> {
+            TagListAdapter tagListAdapter = new TagListAdapter(c);
+            listView.setAdapter(tagListAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    ds.setTagByPosition(position);
+                    Intent intent = new Intent(c, ProductListActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }, 3000);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.hide();
+        }
 
     }
 
     private class TagListAdapter extends BaseAdapter {
         private Context context;
-        private ListView listView;
         private List<String> tags = DataStore.dataStore.getTags();
 
         TagListAdapter(Context content) {
@@ -67,9 +73,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             TextView textView = new TextView(context);
-            System.out.println(tags.get(position));
             textView.setText(tags.get(position));
-            textView.setBackgroundColor(position % 2 == 0 ? 0xffffffff : 0xbbbbbbbb);
+            textView.setBackgroundColor(position % 2 == 0 ? 0xbbbbbbbb : 0xffffffff);
             textView.setTextSize(22);
             return textView;
         }

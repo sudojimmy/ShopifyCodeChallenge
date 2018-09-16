@@ -1,5 +1,7 @@
 package project.jimmy.shopify_codechanllenge;
 
+import android.graphics.Bitmap;
+
 import java.util.List;
 
 public class Product {
@@ -21,4 +23,6 @@ public class Product {
     String updated_at;
     List<Variant>variants;
     String vendor;
+    int total_inventory;
+    Bitmap imageBitMap;
 }
