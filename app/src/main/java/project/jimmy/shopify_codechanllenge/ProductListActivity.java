@@ -1,12 +1,8 @@
 package project.jimmy.shopify_codechanllenge;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,27 +10,23 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 
+import project.jimmy.shopify_codechanllenge.types.Product;
+
 public class ProductListActivity extends AppCompatActivity {
+    private final DataStore dataStore = DataStore.dataStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DataStore ds = DataStore.dataStore;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
-        Log.d("PRODUCT SIZE", ""+ds.getProducts().size());
-        for (Product p: ds.getProducts()) {
-            Log.d("TAG", ""+p.total_inventory);
-        }
 
         ListView listView = findViewById(R.id.product_list_view);
-        listView.setAdapter(new ProductListAdapter(this));
+        listView.setAdapter(new ProductListAdapter());
 
         TextView title = findViewById(R.id.productListTitleText);
-        title.setText("Tag: " + ds.getTag());
+        title.setText("Tag: " + dataStore.getTag());
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
@@ -43,21 +35,16 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     private class ProductListAdapter extends BaseAdapter {
-        private Context context;
-        private List<Product> product = DataStore.dataStore.getProducts();
-
-        ProductListAdapter(Context content) {
-            this.context = content;
-        }
+        private List<Product> products = dataStore.getProducts();
 
         @Override
         public int getCount() {
-            return product.size();
+            return products.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return product.get(position);
+            return products.get(position);
         }
 
         @Override
@@ -72,11 +59,12 @@ public class ProductListActivity extends AppCompatActivity {
             TextView textView_title = (TextView) view.findViewById(R.id.titleTextView);
             TextView textView_inventory = (TextView) view.findViewById(R.id.inventoryTextView);
 
-            if (product.get(position).imageBitMap != null) {
-                imageView.setImageBitmap(product.get(position).imageBitMap);
+            Product product = products.get(position);
+            if (product.imageBitMap != null) {
+                imageView.setImageBitmap(product.imageBitMap);
             }
-            textView_title.setText(product.get(position).title);
-            textView_inventory.setText("Total Inventory: " + product.get(position).total_inventory);
+            textView_title.setText(product.title);
+            textView_inventory.setText("Total Inventory: " + product.total_inventory);
             return view;
         }
     }

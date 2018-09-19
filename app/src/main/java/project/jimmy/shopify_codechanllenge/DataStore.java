@@ -1,6 +1,5 @@
 package project.jimmy.shopify_codechanllenge;
 
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
@@ -20,6 +19,8 @@ import java.util.stream.Collectors;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import project.jimmy.shopify_codechanllenge.types.Product;
+import project.jimmy.shopify_codechanllenge.types.Table;
 
 public class DataStore {
     public static final String URL = "https://shopicruit.myshopify.com/admin/products.json?page=1&access_token=c32313df0d0ef512ca64d5b336a0d7c6";
@@ -28,16 +29,17 @@ public class DataStore {
     private String tag = "";
     private List<String>tags = new ArrayList<>();
     DataStore() {
-        final OkHttpClient client = new OkHttpClient();
-        final Request request = new Request.Builder().url(URL).build();
-
         new Thread() {
             public void run() {
                 try {
+                    final OkHttpClient client = new OkHttpClient();
+                    final Request request = new Request.Builder().url(URL).build();
+
                     Response response = client.newCall(request).execute();
                     Gson gson = new Gson();
                     table = gson.fromJson(response.body().string(), Table.class);
                     Log.d("DEBUG", "table constructed successfully");
+
                     Set<String> set = new HashSet<>();
                     table.products.forEach(product -> {
                         product.tagList = Arrays.asList(product.tags.split("\\s*, \\s*"));
@@ -48,14 +50,15 @@ public class DataStore {
                                 .map(variant -> variant.inventory_quantity)
                                 .reduce(0, Integer::sum);
                         try {
-                            product.imageBitMap = BitmapFactory.decodeStream((InputStream) new URL(product.image.src).getContent());
-                        } catch (IOException e) {
+                            product.imageBitMap = BitmapFactory
+                                    .decodeStream((InputStream) new URL(product.image.src).getContent());
+                        } catch (IOException e) { // should check alternative src in the real case
+                            Log.d("ERROR", "Image bitmap construct fail");
                             e.printStackTrace();
                         }
                     });
                     tags.addAll(set);
                     Collections.sort(tags);
-                    Log.d("DEBUG", "tags size " + tags.size());
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.d("ERROR", "table constructed fail");

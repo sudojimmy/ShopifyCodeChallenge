@@ -16,29 +16,29 @@ import android.widget.TextView;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private final DataStore dataStore = DataStore.dataStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DataStore ds = DataStore.dataStore;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         ListView listView = findViewById(R.id.tag_list_view);
 
-        Context c = this;
+        Context content = this;
         Handler handler = new Handler();
         handler.postDelayed(() -> {
-            TagListAdapter tagListAdapter = new TagListAdapter(c);
+            TagListAdapter tagListAdapter = new TagListAdapter(content);
             listView.setAdapter(tagListAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    ds.setTagByPosition(position);
-                    Intent intent = new Intent(c, ProductListActivity.class);
+                    dataStore.setTagByPosition(position);
+                    Intent intent = new Intent(content, ProductListActivity.class);
                     startActivity(intent);
                 }
             });
-        }, 3000);
+        }, 3000); // Waiting for DataStore fetching data from url. Not a quite good solution though.
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class TagListAdapter extends BaseAdapter {
         private Context context;
-        private List<String> tags = DataStore.dataStore.getTags();
+        private List<String> tags = dataStore.getTags();
 
         TagListAdapter(Context content) {
             this.context = content;
